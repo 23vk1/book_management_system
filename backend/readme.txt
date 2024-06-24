@@ -9,7 +9,7 @@ open terminal in folder
 run - npm init
 run - node app.js || nodemon
 
-
+// make sure you have "uploads" folder and "logs" folder in your directory directory (if does not than make)  
 
 postman testing ...
 
