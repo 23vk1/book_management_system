@@ -11,9 +11,14 @@ const Admin = require('./model/admin.model.js');
 const Books = require('./model/book.model.js');
 
 const utils = {};
+
+// // <------ Mongo Connection ------> // // // //
+
 utils.connection = libMongoose.connect(process.env.MONGO_URL).then(() => {
     utils.logger("mongodb connected", 1);
 });
+
+// // <-------  Multer ------->  // // // // // 
 
 utils.storage = multer.diskStorage({
     destination: 'uploads/',
@@ -25,22 +30,30 @@ utils.upload = multer({
     storage: utils.storage
 })
 
+
+// // <------- Authantication -------> // // // // // // // 
+
 utils.authantication = (req, res, next) => {
+    console.log(req.cookies.token);
     // varify if user is logged in or not 
     if (req.cookies.token) {
+        console.log(req.cookies.token)
         libJwt.verify(req.cookies.token, process.env.JWT_SECRET_KEY, (error, decoded) => {
             if (error) {
                 res.clearCookie('token');
-                return res.status(400).json({msg:"user not authorised redirect to login page"});
+                return res.status(400).json({msg:"user not authorised redirect to login page  001"});
             } else {
                 next();
             }
         })
-    } else {
-        res.status(400).json({msg:"user not authorised redirect to login page"});
+    } else {    
+        res.status(400).json({msg:"user not authorised redirect to login page  002"});
     }
 },
 
+
+
+// // <----- Logger ----->// // // // // // // // // // // // // // 
 
 utils.logColorPicker = {
     0:libChalk.white,
@@ -74,6 +87,8 @@ utils.logger = (msg, escalation = 0)=>{
     })
     console.log(utils.logColorPicker[escalation](log));
 }
+
+//  //--------------------------------------------------//  //
 
 
 module.exports = utils;

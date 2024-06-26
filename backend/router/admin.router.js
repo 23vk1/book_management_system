@@ -41,6 +41,21 @@ adminRouter.post('/login', async (req, res) => {
     }
 })
 
+// get all books
+adminRouter.get('/books',async(req, res)=>{
+    console.log("api hit")
+        try{
+            const data = await  Books.find();
+            console.log(data); 
+            res.status(200).json({msg:"data get successfully", bookData : data});
+        }
+        catch(e){
+            console.log(e);
+            res.status(400).json({msg:"error getting data"});
+        }
+})
+
+
 // {name,category,price,author,language,pdfUrl,imageUrl}
 // api 'admin/book/add'
 adminRouter.post('/book/add', libUtils.upload.fields([{name:"pdf1",maxCount:1},{name:'img1',maxCount:1}]), async (req, res) => {
@@ -86,10 +101,10 @@ adminRouter.get('/read/:filename',(req, res)=>{
 
 // delete book (using id)
 //api '/admin/delete/book/:id'
-adminRouter.delete('/delete/book/:id', libUtils.authantication, async(req, res) => {
-    const { _id } = req.params.id;
+adminRouter.delete('/delete/book/:id', async(req, res) => {
+    const id = req.params.id;
     try {
-        const deletedBook = await Books.deleteOne(_id);
+        const deletedBook = await Books.findByIdAndDelete({_id:id});
         if (!deletedBook) {
             libUtils.logger("Book not found while deleting", 3);
             res.status(400).json({ "msg": "Book not found" });
@@ -107,7 +122,7 @@ adminRouter.delete('/delete/book/:id', libUtils.authantication, async(req, res) 
 
 //{name,email,phone,password,address}
 // api 'admin/add'  
-adminRouter.post('/add', libUtils.authantication, async (req, res) => {
+adminRouter.post('/add', async (req, res) => {
     const { name, email, phone, password, address } = req.body;
     try {
         const admin = new Admin({ name, email, phone, password, address })

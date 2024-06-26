@@ -9,9 +9,9 @@ const cookieParser = require('cookie-parser')
 
 
 const app = libExpress();
-app.use(cors());
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(cors());
 // app.use(libExpress.json());
 
 

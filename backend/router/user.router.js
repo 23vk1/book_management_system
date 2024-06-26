@@ -21,10 +21,10 @@ userRouter.post('/login', async (req, res) => {
             libUtils.logger("user not authorised", 3);
             return res.status(400).json({ "msg": "user not authorised" });
         }
-        const books = await Books.find();
+        // const books = await Books.find();
         libJwt.sign({ emailid: email }, process.env.JWT_SECRET_KEY, (error, token) => {
             res.cookie("token", token);
-            res.status(200).json({ books: books, user: user });
+            res.status(200).json({ userName: user.name });
         })
     } catch (e) {
         console.log(e);
@@ -34,13 +34,23 @@ userRouter.post('/login', async (req, res) => {
 })
 
 
-// userRouter.get('/login',(req, res)=>{
-//     console.log("login page get");
-//     res.status(200).json({msg:"login page"});
-// })
+// get all books
+userRouter.get('/books',async(req, res)=>{
+    console.log("api hit")
+        try{
+            const data = await  Books.find();
+            console.log(data); 
+            res.status(200).json({msg:"data get successfully", bookData : data});
+        }
+        catch(e){
+            console.log(e);
+            res.status(400).json({msg:"error getting data"});
+        }
+})
+
 
 // to read file (API = user/read/filename.pdf)
-userRouter.get('/read/:filename', libUtils.authantication, (req, res) => {
+userRouter.get('/read/:filename', (req, res) => {
     const filePath = libPath.join(__dirname, '../', 'uploads', req.params.filename);
     console.log(filePath)
     fs.exists(filePath, (exists) => {
@@ -56,7 +66,7 @@ userRouter.get('/read/:filename', libUtils.authantication, (req, res) => {
 
 
 //{name,email,phone,password,address}
-userRouter.post('/user/register', async (req, res) => {
+userRouter.post('/register', async (req, res) => {
     const { name, email, phone, password, address } = req.body;
     try {
         const user = new User({ name, email, phone, password, address })
